@@ -1,0 +1,2 @@
+5-3: precision(11), sample frequency(100)
+254 1 1 2
