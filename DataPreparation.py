@@ -27,12 +27,7 @@ def get_file_paths(root_dir: str = ".") -> list:
     # Recursively get all files from current working directory
     for root, dirs, files in os.walk(root_dir):
         for file in files:
-            if (
-                (".txt" in file)
-                and (not "readme" in file.lower())
-                and (not "requirement" in file.lower())
-                and (not len(file) < 7)
-            ):
+            if (".txt" in file) and ("acceleration" in file.lower()):
                 # Append filepaths to empty list
                 file_paths.append(os.path.join(root, file))
 
