@@ -59,65 +59,6 @@ def cross_entropy(y_predicted: np.ndarray, y_true: np.ndarray) -> np.ndarray | f
     return loss
 
 
-def gradient_descent(
-    X: np.ndarray,
-    y: np.ndarray,
-    learning_rate: float = 0.1,
-    iter: int = 1000,
-    print_loss: bool = False,
-) -> np.ndarray:
-    """_summary_
-        Setup Gradient Descent Algorithm to update and calculate weights
-        Taken from documentation in sklearn library
-
-        Implement gradient descent algorithm to initialize and update
-        weights for our model
-
-
-    Args:
-        X (np.ndarray): _description_ y (np.ndarray): _description_
-        learning_rate (float, optional): _description_. Defaults to 0.1.
-        iter (int, optional): _description_. Defaults to 1000.
-        print_loss (bool, optional): _description_. Defaults to False.
-
-    Returns:
-        np.ndarray: weight distribution
-        list: epoch indexing
-        list: loss indexing
-    """
-
-    # Empty list for Epoch
-    epoch = []
-    # Empty list fpr accuracy
-    losses = []
-
-    # Get Sample, Feature and Class numbers
-    num_samples, num_features = X.shape
-    num_classes = y.shape[1]
-
-    # Initialize Parameters
-    weight = np.random.randn(num_features, num_classes)
-
-    # Setup Iteration to update weights
-    for i in range(iter):
-        scores = np.dot(X, weight)  # Dot product of arrays
-        # alterntely use @?
-        probabiliy_dist = sigmoid_softmax(scores)
-        gradient = np.dot(X.T, probabiliy_dist - y) / num_samples
-
-        weight = weight - learning_rate * gradient
-
-        # Print progress
-        if print_loss and (i + 1) % 100 == 0:
-            loss = cross_entropy(probabiliy_dist, y)
-
-            epoch.append(i + 1)
-            losses.append(loss)
-            print(f"Iteration {i+1}, Loss: {loss}")
-
-    return weight, epoch, losses
-
-
 def predict(X: np.ndarray, weight: np.ndarray) -> np.ndarray:
     """_summary_
         Setup prediction function Self implemented from context
@@ -141,7 +82,7 @@ def predict(X: np.ndarray, weight: np.ndarray) -> np.ndarray:
     return predicted_class
 
 
-def accuracy(y_predicted: np.ndarray, y: np.ndarray) -> np.ndarray | float:
+def accuracy_of_model(y_predicted: np.ndarray, y: np.ndarray) -> np.ndarray | float:
     """_summary_
         Setup accuracy function Self implemented from context
 
@@ -158,9 +99,64 @@ def accuracy(y_predicted: np.ndarray, y: np.ndarray) -> np.ndarray | float:
     acc_pred = y_predicted == y
     acc_pred_mean = np.mean(acc_pred)
 
-    print(f"Accuracy is {acc_pred_mean}")
-
     return acc_pred, acc_pred_mean
+
+
+def gradient_descent(
+    X: np.ndarray,
+    y: np.ndarray,
+    learning_rate: float = 0.1,
+    iter: int = 1000,
+    print_loss: bool = False,
+) -> np.ndarray:
+    """_summary_
+        Setup Gradient Descent Algorithm to update and calculate weights
+        Taken from documentation in sklearn library
+
+        Implement gradient descent algorithm to initialize and update
+        weights for our model
+
+
+    Args:
+        X (np.ndarray): input training matrix
+        y (np.ndarray): input OHE target feature
+        learning_rate (float, optional): _description_. Defaults to 0.1.
+        iter (int, optional): _description_. Defaults to 1000.
+        print_loss (bool, optional): _description_. Defaults to False.
+
+    Returns:
+        np.ndarray: weight distribution
+        list: epoch indexing
+        list: loss indexing
+    """
+    # Empty list for loss
+    losses = []
+
+    # Get Sample, Feature and Class numbers
+    num_samples, num_features = X.shape
+    num_classes = y.shape[1]
+
+    # Initialize Parameters
+    weight = np.random.randn(num_features, num_classes)
+
+    # Setup Iteration to update weights
+    for i in range(iter):
+        scores = np.dot(X, weight)  # Dot product of arrays
+        # alterntely use @?
+        probabiliy_dist = sigmoid_softmax(scores)
+        gradient = np.dot(X.T, probabiliy_dist - y) / num_samples
+
+        weight = weight - learning_rate * gradient
+
+        loss = cross_entropy(probabiliy_dist, y)
+        losses.append(loss)
+
+        # Print progress and append epoch metrics
+        if print_loss and (i + 1) % 100 == 0:
+            # Find accuracy for plot
+            print(f"Iteration {i+1}, Loss: {loss}")
+
+    return weight, losses
 
 
 def confusion_matrix_plot(y_true: np.ndarray, y_predicted: np.ndarray) -> None:
@@ -180,29 +176,48 @@ def confusion_matrix_plot(y_true: np.ndarray, y_predicted: np.ndarray) -> None:
         for j in range(num_classes):
             confusion_matrix[i, j] = np.sum((y_true == i) & (y_predicted == j))
 
-        plt.figure(figsize=(10, 10))
-        plt.imshow(confusion_matrix, interpolation="nearest", cmap="Blues")
-        plt.colorbar()
-        plt.xticks(np.arange(num_classes), range(num_classes))
-        plt.yticks(np.arange(num_classes), range(num_classes))
-        plt.xlabel("Predicted")
-        plt.ylabel("True")
-        plt.title("Confusion Matrix")
-        plt.show()
+    plt.figure(figsize=(10, 10))
+    plt.imshow(confusion_matrix, interpolation="nearest", cmap="Blues")
+    plt.colorbar()
+    plt.xticks(np.arange(num_classes), range(num_classes))
+    plt.yticks(np.arange(num_classes), range(num_classes))
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.title("Confusion Matrix on Validation Set")
+    plt.show()
 
 
-def loss_plot(epochs: list, accuracy: list) -> None:
+def loss_plot(loss: list | np.ndarray) -> None:
     """_summary_
     Plot Loss over Epochs, showing progression
 
     Args:
-        epochs (list): Iteration number
-        accuracy (list): How accurate ie how low is our losses
+        loss (list): How accurate ie how low is our losses
     """
-    plt.plot(epochs, accuracy)
+    plt.plot(loss)
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
-    plt.title("Model Accuracy")
+    plt.title("Model Loss over Epochs")
+    plt.show()
+
+
+def compare_accuracy(accuracy_test: float, acuracy_train: float) -> None:
+    """_summary_
+    Plot Loss over Epochs, showing progression
+
+    Args:
+        accuracy (list): How accurate ie how high our model accuracy is
+    """
+    labels = [
+        "Accuracy of Predicition on Test Data",
+        "Accuracy of Prediction on Train Data",
+    ]
+    values = [accuracy_test, acuracy_train]
+
+    plt.bar(labels, values)
+
+    plt.ylabel("Accuracy in %")
+    plt.title("Comparison of Accuracies")
     plt.show()
 
 
@@ -224,7 +239,7 @@ def model(
 
     """
     # Gradient descent to retrieve trained parameters
-    weight, model_epochs, model_losses = gradient_descent(
+    weight, model_losses = gradient_descent(
         X_train, y_train, learning_rate, iter, print_loss
     )
 
@@ -233,21 +248,30 @@ def model(
     y_predicted_test = predict(X_valid, weight)
 
     # Accuracy Inspection
-    acc_train_compare, acc_train_mean = accuracy(y_predicted_train, y_valid_train)
-    acc_valid_compare, acc_valid_mean = accuracy(y_predicted_test, y_valid_test)
+    acc_train_compare, acc_train_mean = accuracy_of_model(
+        y_predicted_train, y_valid_train
+    )
+    acc_test_compare, acc_test_mean = accuracy_of_model(y_predicted_test, y_valid_test)
 
-    print(f"The prediction accuracy of the training dataset is {acc_train_mean*100}%")
+    # As Percentages
+    acc_test = acc_test_mean * 100
+    acc_train = acc_train_mean * 100
+
+    print(f"The prediction accuracy of the training dataset is {acc_train}%")
     print("The comparision array is as follows:")
     print(acc_train_compare)
 
-    print(f"The prediction accuracy of the testing dataset is {acc_valid_mean*100}%")
+    print(f"The prediction accuracy of the validation dataset is {acc_test}%")
     print("The comparision array is as follows:")
-    print(acc_valid_compare)
+    print(acc_test_compare)
+
+    # Compare accuracies on dataset
+    compare_accuracy(acc_test, acc_train)
 
     # Plot Visualisations
 
     # Plot Loss Function
+    loss_plot(model_losses)
 
-    loss_plot(model_epochs, model_losses)
-
+    # Plot Confusion Matrix
     confusion_matrix_plot(y_valid_test, y_predicted_test)

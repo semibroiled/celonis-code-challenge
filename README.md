@@ -2,7 +2,12 @@
 
 A Multi Classification Problem to Recognize Gestures from Accelerometer Time Series Data
 
+By Amitav Chris Mostafa
+,with care and support from good friends and family
+,library textbooks and scripts at TU Darmstadt
+, and python library documentations :D 
 
+Celonis Code Challenge Task 1 
 
 ___________Abstract______________
 
@@ -58,5 +63,13 @@ As I intended to work with low epochs to begin with i did not necessarily choose
 hyper optimized methods, but also I was limited by my capacity in knowledge and experience
 . As such, the speeds are quite slow when compared to its load. 
 
+I noticed more efficiency in my code, such as not calling functions in other functions
+for efficiency. That is something that is needful to be addressed as well
 
+I wanted to put in a accuracy plot over epoch but the way i set up my code 
+made it hard to incorporate. Note to self, plan out your important ideas
+in the future.
 
+Endtime: 14:06 CEST (took about 6-7h excluding reading literature)
+
+I hope you are happy with the solution! Couldn't make it as elegant as I'd hoped.
