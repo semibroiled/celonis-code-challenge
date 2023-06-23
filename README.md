@@ -73,3 +73,12 @@ in the future.
 Endtime: 14:06 CEST (took about 6-7h excluding reading literature)
 
 I hope you are happy with the solution! Couldn't make it as elegant as I'd hoped.
+
+I think the plots illustrate well the high enough accuracies with this minimal solution.
+The math works! There are some false positives on the confusion matrix but
+the density along the diagonal looks great. Loss is also that logarithmly
+deacreased quickly over time. Ideally I'd make a list of hyperparameters and compare them 
+to find the best find. For now, I'm sticking to test values.
+
+Thank you for your considerations! I think I improved myself a little too with
+the challenge :D
