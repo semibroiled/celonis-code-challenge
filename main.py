@@ -2,7 +2,7 @@
 import numpy as np
 import data_preparation
 import data_preprocessing
-import pipeline
+import pipe_line
 
 
 # Define main function
@@ -34,7 +34,7 @@ def main() -> None:
     hyperparameters = {"Learning Rate": 0.1, "Number of Iterations": 1000}
 
     # Run Model
-    pipeline.model(
+    pipe_line.model(
         X_train,
         y_train,
         X_valid,
